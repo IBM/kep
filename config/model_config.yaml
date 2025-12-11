@@ -1,0 +1,23 @@
+watsonx:
+  configs:
+    url: "https://us-south.ml.cloud.ibm.com"
+    apikey: "YOUR_NEW_API_KEY_HERE"
+    project_id: "YOUR_PROJECT_ID"
+    parameters:
+      decoding_method: "greedy"
+      max_new_tokens: 2000
+      min_new_tokens: 1
+      temperature: 0.7
+      top_k: 50
+      top_p: 0.9
+  models:
+    - id: "mistralai/mistral-large"
+    - id: "meta-llama/llama-3-3-70b-instruct"
+    # Add additional models as needed.]
+
+rits:
+  deepseek_v3:
+    api_url: "https://inference-3scale-apicast-production.apps.rits.fmaas.res.ibm.com/deepseek-v3/v1/chat/completions"
+    rits_api_key: "YOUR_RITS_API_KEY"
+    request_defaults:
+      model: "deepseek-ai/DeepSeek-V3"

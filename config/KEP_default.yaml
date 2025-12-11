@@ -1,0 +1,10 @@
+pdf_dir: "./pdfs"       # Required
+parser: "PyMuPDF"       # "Docling" | "Tika" | PyMuPDF are supported by default
+classification_config: "config/config.yaml"
+extraction_config: "config/config.yaml"
+work_dir: "results/pipeline_run"        # Output directory
+prompt_mode_classification: "raw"        # few | zero | raw -> few shot, zero shot or raw prompt mode in classification step
+prompt_mode_extraction: "raw"        # few | zero | raw -> few shot, zero shot or raw prompt mode in extraction step
+chunk_strategy: "paragraph"       # "fixed" | "sentence" | "paragraph"
+chunk_size: 100         # Chunk size for fixed chunking
+chunk_overlap: 25       # Chunk overlap for fixed chunking

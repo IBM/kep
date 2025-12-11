@@ -1,0 +1,156 @@
+provider: "watsonx"
+
+# Optional generation params
+hyperparameters:
+  max_tokens: 2048
+  temperature: 0.7
+  top_p: 0.9
+
+# local client params
+api_access: "chat"        # chat | textgen -> generation mode selection
+model_id: "meta-llama/llama-3-405b-instruct"  # id of the model
+classification_schema:
+    PROMPT: |
+      You are a meticulous scientific assistant. Your only job is to decide whether a paragraph is relevant to the technical core of a patent on battery-related materials and processes.
+
+      Classify the paragraph as either **relevant** or **irrelevant**.
+
+      Return **one** valid JSON object that follows the schema below — nothing else.
+      No prose, no Markdown, no explanations before or after the JSON.
+      The field **classification** must be exactly "relevant" or "irrelevant" (lower-case).
+      A **relevant** paragraph must describe a material, if have a material, it will be always relevant
+
+      Schema:
+      {
+        "classification": "relevant or irrelevant"
+      }
+
+      Examples:
+      [
+        {
+          "text": "As a result, the liquid electrolyte of the present invention overcomes problems of battery performance decline caused by a swelling phenomenon and quality decline caused by battery deformation, and the amount of gas generation is significantly reduced without declining battery properties such as battery life time or efficiency when operating a lithium-sulfur battery.",
+          "classification": "irrelevant"
+        },
+        {
+          "text": "With active ingredient (A), the or each active ingredient (A) is suspended or dispersed in an aqueous phase and the or each active ingredient (D), independently of each other, may be also dispersed in the aqueous phase or be provided in an encapsulated form (e.g. as a micro-capsule).",
+          "classification": "irrelevant"
+        },
+        {
+          "text": "Solutions and emulsions requiring an organic solvent as the main carrier are undesirable since the solvent usually serves no other purpose but to act as a carrier for the product and, as such, the solvent adds an unnecessary cost to the formulation, and the solvent itself can be environmentally harmful.",
+          "classification": "irrelevant"
+        },
+        {
+          "text": "A LED package includes a substrate, a LED chip, a sealing layer, and a quartz glass in this order. … The disclosure further provides a method of manufacturing the LED package.",
+          "classification": "relevant"
+        },
+        {
+          "text": "A polycarbonate resin composition of claim 3, wherein the sulfur-containing compound is butyl p-toluenesulfonate.",
+          "classification": "relevant"
+        },
+        {
+          "text": "FIGS. 10a-10c. FIG. 10a shows initial charge/discharge profiles, FIG. 10b shows discharge capacity vs. cycle number, and FIG. 10c shows capacity retention vs. cycle number for embodiments of the lithium phosphate-infused Ni-rich LiNi0.76Mn0.14Co0.10O2, based on the disclosed hydroxide precursor coating method.",
+          "classification": "irrelevant"
+        },
+        {
+          "text": "[0073] The milling process … Appropriate devices for the first step include attritors, colloid mills, Dyno-mills …",
+          "classification": "irrelevant"
+        },
+        {
+          "text": "(1) The doping uniformity is the key performance of optical fibres … and can effectively avoid the micro-pore permeability difference of various co-doping agents …",
+          "classification": "irrelevant"
+        },
+        {
+          "text": "[0052] In an embodiment, the alkoxylated polyarylphenol is a poly-ethoxylated arylalkylphenol such as 2,4,6-tris(1-phenylethyl)phenol …",
+          "classification": "irrelevant"
+        }
+      ]
+
+
+extraction_schema:
+    PROMPT: |
+      You are a highly skilled scientific information-extraction assistant.
+
+      Extract structured data from the paragraph below and return exactly one valid JSON object that conforms to the given schema.
+
+      Strict schema compliance: the JSON object must contain exactly the keys listed in SCHEMAS—no extras.
+      Valid JSON only: do NOT add markdown, explanations, or any text outside the JSON object.
+      Empty lists for missing data: if the paragraph contains no value for a key, output an empty list.
+      No additional commentary: output the JSON object and nothing else.
+      Precision: capture the information precisely; do not hallucinate.
+
+      Schema:
+      {
+        "materials": [
+          "Material"
+        ],
+        "applications": [
+          "Application"
+        ],
+        "roles": [
+          "Role"
+        ],
+        "properties": [
+          "Property"
+        ]
+      }
+
+      Examples:
+      [
+        {
+          "text": "A conductive lubricating oil composition including at least one lubricating base oil selected from the group consisting of compounds represented by the following General Formula (1) and compounds represented by the following General Formula (2), and at least one conductivity imparting agent selected from the group consisting of potassium trifluoromethanesulfonate, lithium trifluoromethanesulfonate, lithium nonafluorobutanesulfonate, lithium bis(trifluoromethanesulfonyl)imide, potassium bis(trifluoromethanesulfonyl)imide, and lithium tris(trifluoromethanesulfonyl)methide, in an amount of from 0.01% by mass to 1% by mass, and having a rate of change in conductivity after storage at 120 °C for 200 h of 10 % or less.",
+          "output": {
+            "materials": [
+              "potassium trifluoromethanesulfonate",
+              "lithium trifluoromethanesulfonate",
+              "lithium nonafluorobutanesulfonate",
+              "lithium bis(trifluoromethanesulfonyl)imide",
+              "potassium bis(trifluoromethanesulfonyl)imide",
+              "lithium tris(trifluoromethanesulfonyl)methide"
+            ],
+            "applications": [
+              "conductive lubricating oil composition"
+            ],
+            "roles": [
+              "conductivity imparting agent"
+            ],
+            "properties": [
+              "conductive lubricating",
+              "lubricating",
+              "conductivity imparting"
+            ]
+          },
+          "source": "US10563149-B2",
+          "source_link": "https://acr-circa-ex.sl.res.ibm.com/circa/pviewIPOC.jsp?pn=US-10563149-B2"
+        },
+        {
+          "text": "The manufacturing method of claim 11, wherein said lithium ion-conducting materials is dispersed in said high-elasticity polymer and is selected from lithium perchlorate (LiClO4), lithium hexafluorophosphate (LiPF6), lithium borofluoride (LiBF4), lithium hexafluoroarsenide (LiAsF6), lithium trifluoro methanesulfonate (LiCF3SO3), bis-trifluoromethyl sulfonylimide lithium (LiN(CF3SO2)2), lithium bis(oxalato) borate (LiBOB), lithium oxalyldifluoroborate (LiBF2C2O4), lithium nitrate (LiNO3), Li-fluoroalkyl-phosphates (LiPF3(CF2CF3)3), lithium bisperfluoro-ethysulfonylimide (LiBETI), lithium bis(trifluoromethanesulfonyl)imide, lithium bis(fluorosulfonyl)imide, lithium trifluoromethanesulfonimide (LiTFSI), an ionic-liquid-based lithium salt, or a combination thereof.",
+          "output": {
+            "materials": [
+              "lithium bis(fluorosulfonyl)imide",
+              "lithium bis(trifluoromethanesulfonyl)imide",
+              "Li-fluoroalkyl-phosphates (LiPF3(CF2CF3)3)",
+              "bis-trifluoromethyl sulfonylimide lithium (LiN(CF3SO2)2)",
+              "ionic-liquid-based lithium salt",
+              "lithium bis(oxalato) borate (LiBOB)",
+              "lithium bisperfluoro-ethysulfonylimide (LiBETI)",
+              "lithium borofluoride (LiBF4)",
+              "lithium hexafluoroarsenide (LiAsF6)",
+              "lithium hexafluorophosphate (LiPF6)",
+              "lithium nitrate (LiNO3)",
+              "lithium oxalyldifluoroborate (LiBF2C2O4)",
+              "lithium perchlorate (LiClO4)",
+              "lithium trifluoro methanesulfonate (LiCF3SO3)",
+              "lithium trifluoromethanesulfonimide (LiTFSI)"
+            ],
+            "applications": [
+              "manufacturing method"
+            ],
+            "roles": [
+              "lithium ion-conducting materials"
+            ],
+            "properties": []
+          },
+          "source": "US10720669-B2",
+          "source_link": "https://acr-circa-ex.sl.res.ibm.com/circa/pviewIPOC.jsp?pn=US-10720669-B2"
+        }
+      ]
