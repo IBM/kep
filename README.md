@@ -12,8 +12,8 @@
 
 KEP ingests PDFs / plain-text, splits them into chunks, calls an LLM for either
 
-* **Extraction** – return JSON that follows a user–defined schema, or  
 * **Classification** – tag each paragraph (e.g. “relevant” / “irrelevant”)
+* **Extraction** – return JSON that follows a user–defined schema, or  
 
 ## 1.1 What does KEP do?
 
